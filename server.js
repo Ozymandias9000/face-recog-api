@@ -13,6 +13,7 @@ const db = require('knex')({
 });
 
 const app = express();
+
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -26,7 +27,7 @@ app.post('/signin', (req, res) => {
 		.then(data => {
 			const isValid = bCrypt.compareSync(req.body.password, data[0].hash);
 			if (isValid) {
-				return db.selct('*').from('users')
+				return db.select('*').from('users')
 					.where('email', '=', req.body.email)
 					.then(user => {
 						res.json(user[0])
@@ -45,26 +46,26 @@ app.post('/register', (req, res) => {
 	db.transaction(trx => {
 		trx.insert({
 			hash,
-			email
+			email,
 		})
 			.into('login')
 			.returning('email')
 			.then(loginEmail => {
-				db('users')
-				.returning('*')
-				.insert({
-					email: loginEmail[0],
-					name,
-					joined: new Date()
-				})
-				.then(user => {
-					res.json(user[0]);
-				})
+				return trx('users')
+					.returning('*')
+					.insert({
+						email: loginEmail[0],
+						name,
+						joined: new Date(),
+					})
+					.then(user => {
+						res.json(user[0]);
+					})
 			})
 			.then(trx.commit)
 			.catch(trx.rollback)
 	})
-		.catch(err => res.status(400).json('unable to register'));
+	.catch(err => res.status(400).json('unable to register'));
 });
 
 app.get('/profile/:id', (req, res) => {
@@ -83,7 +84,7 @@ app.put('/image', (req, res) => {
 		.increment('entries', 1)
 		.returning('entries')
 		.then(entries => {
-			console.log(entries);
+			res.json(entries[0]);
 		})
 		.catch(err => res.status(400).json('Oh no!'))
 });
