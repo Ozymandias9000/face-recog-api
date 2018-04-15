@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-app.use(cors());
+app.use(cors({credentials: true, origin: true}));
 const PORT = process.env.PORT;
 const bodyParser = require('body-parser');
 const bCrypt = require('bcrypt-nodejs');
