@@ -4,12 +4,12 @@ const handleSignIn = (req, res, bCrypt, db) => {
 		return res.status(400).json('unable to register');
 	}
 	db.select('email', 'hash').from('login')
-		.where('email', '=', req.body.email)
+		.where('email', '=', email)
 		.then(data => {
-			const isValid = bCrypt.compareSync(req.body.password, data[0].hash);
+			const isValid = bCrypt.compareSync(password, data[0].hash);
 			if (isValid) {
 				return db.select('*').from('users')
-					.where('email', '=', req.body.email)
+					.where('email', '=', email)
 					.then(user => {
 						res.json(user[0])
 					})
