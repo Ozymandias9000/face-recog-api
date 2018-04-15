@@ -1,4 +1,6 @@
 const express = require('express');
+const app = express();
+app.use(cors());
 const PORT = process.env.PORT;
 const bodyParser = require('body-parser');
 const bCrypt = require('bcrypt-nodejs');
@@ -10,17 +12,12 @@ const db = require('knex')({
 		ssl: true,
 	}
 });
+app.use(bodyParser.json());
 
 const register = require('./controllers/register');
 const signIn = require('./controllers/signIn');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
-
-
-const app = express();
-
-app.use(bodyParser.json());
-app.use(cors());
 
 app.get('/', (req, res) => { res.send('it is working!') });
 app.post('/signin', (req,res) => { signIn.handleSignIn(req, res, bCrypt, db) });
