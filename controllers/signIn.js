@@ -1,4 +1,8 @@
 const handleSignIn = (req, res, bCrypt, db) => {
+	const { email,password } = req.body;
+	if (!email || !password) {
+		return res.status(400).json('unable to register');
+	}
 	db.select('email', 'hash').from('login')
 		.where('email', '=', req.body.email)
 		.then(data => {
