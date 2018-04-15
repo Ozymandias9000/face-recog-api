@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 app.use(cors({credentials: true, origin: true}));
-app.options('*', cors());
+
 const PORT = process.env.PORT;
 const bodyParser = require('body-parser');
 const bCrypt = require('bcrypt-nodejs');
@@ -14,6 +14,12 @@ const db = require('knex')({
 	}
 });
 app.use(bodyParser.json());
+
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 
 const register = require('./controllers/register');
 const signIn = require('./controllers/signIn');
